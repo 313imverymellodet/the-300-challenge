@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The 300 Challenge</title>
+<style>
+  :root{
+    --cream:#faf7f1;
+    --brown:#6b3f1d;
+    --brown-deep:#4a2a12;
+    --gold:#c8912f;
+    --gold-light:#f0c46b;
+    --green:#3e9b52;
+    --ink:#2c1c0e;
+    --muted:#8a7358;
+    --card:#fffdf9;
+    --line:#eaddc9;
+    --red:#c0392b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--cream);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;line-height:1.5}
+  .wrap{max-width:760px;margin:0 auto;padding:0 18px 64px}
+
+  /* HERO */
+  .hero{
+    background:linear-gradient(135deg,var(--brown-deep) 0%,var(--brown) 42%,var(--gold) 100%);
+    color:#fff8ec;text-align:center;padding:52px 24px 46px;
+    border-radius:0 0 28px 28px;box-shadow:0 10px 30px rgba(74,42,18,.28);
+    position:relative;overflow:hidden;
+  }
+  .hero::after{content:"";position:absolute;inset:0;
+    background:radial-gradient(120% 80% at 50% -10%,rgba(255,255,255,.18),transparent 60%);pointer-events:none}
+  .kicker{font-size:13px;letter-spacing:.32em;text-transform:uppercase;
+    font-weight:800;color:var(--gold-light);opacity:.95}
+  .title{font-size:clamp(40px,9vw,68px);font-weight:900;line-height:1;margin:12px 0 14px;
+    letter-spacing:-.02em;text-shadow:0 2px 16px rgba(0,0,0,.25)}
+  .title .num{color:var(--gold-light)}
+  .tagline{max-width:520px;margin:0 auto;font-size:clamp(15px,3.4vw,18px);
+    font-weight:600;color:#fdeccf;opacity:.96}
+
+  .scriptures{text-align:center;margin:22px auto 4px;max-width:560px;color:var(--muted)}
+  .scriptures p{font-style:italic;font-size:14.5px;margin:5px 0}
+  .scriptures b{color:var(--brown);font-style:normal;font-weight:800}
+
+  /* CARDS */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:22px;margin-top:20px;box-shadow:0 6px 20px rgba(107,63,29,.07)}
+
+  /* PROGRESS */
+  .counter{text-align:center;font-weight:900;letter-spacing:-.02em;
+    font-size:clamp(46px,12vw,76px);line-height:1;color:var(--brown)}
+  .counter .of{color:var(--gold);font-size:.5em;font-weight:800}
+  .counter-sub{text-align:center;color:var(--muted);font-weight:700;
+    font-size:13px;letter-spacing:.04em;text-transform:uppercase;margin-top:4px}
+
+  .barwrap{position:relative;margin:22px 0 8px}
+  .bar{height:20px;border-radius:999px;background:#f0e6d5;overflow:hidden;
+    border:1px solid var(--line)}
+  .fill{height:100%;width:0;border-radius:999px;
+    background:linear-gradient(90deg,var(--gold-light),var(--gold) 55%,var(--brown));
+    transition:width .5s cubic-bezier(.22,1,.36,1)}
+  .wall{position:absolute;top:-6px;bottom:-6px;left:25%;width:3px;
+    background:var(--red);border-radius:2px}
+  .wall::after{content:"the 75 wall";position:absolute;top:-20px;left:50%;
+    transform:translateX(-50%);white-space:nowrap;font-size:10.5px;font-weight:800;
+    color:var(--red);letter-spacing:.02em;text-transform:uppercase}
+
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:26px}
+  .stat{background:var(--cream);border:1px solid var(--line);border-radius:14px;
+    padding:14px;text-align:center}
+  .stat .n{font-size:30px;font-weight:900;color:var(--brown);line-height:1}
+  .stat.done .n{color:var(--green)}
+  .stat .l{font-size:11.5px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--muted);margin-top:5px}
+
+  /* MILESTONE */
+  .milestone{display:none;margin-top:16px;border-radius:16px;padding:16px 18px;
+    font-weight:700;font-size:15px;line-height:1.45;
+    background:linear-gradient(135deg,#fff6e6,#fbe9c8);border:1px solid var(--gold-light);
+    color:var(--brown-deep);box-shadow:0 6px 18px rgba(200,145,47,.18);
+    animation:pop .45s cubic-bezier(.18,1.4,.4,1)}
+  .milestone.wall{background:linear-gradient(135deg,#fdecea,#f7d6d0);
+    border-color:#e6a79e;color:#7a1f14;box-shadow:0 6px 18px rgba(192,57,43,.2)}
+  @keyframes pop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+
+  /* REMINDER */
+  .reminder{margin-top:18px;text-align:center;background:var(--brown);color:#fdeccf;
+    border-radius:14px;padding:13px 16px;font-weight:700;font-size:14px}
+
+  /* INPUT */
+  .inputrow{display:flex;gap:10px;margin-top:6px}
+  #entry{flex:1;padding:14px 16px;border:2px solid var(--line);border-radius:14px;
+    font-size:16px;font-weight:600;background:#fff;color:var(--ink);outline:none;
+    transition:border-color .2s}
+  #entry:focus{border-color:var(--gold)}
+  .add{border:none;cursor:pointer;padding:0 22px;border-radius:14px;font-size:16px;
+    font-weight:900;color:#fff;letter-spacing:.02em;
+    background:linear-gradient(135deg,var(--gold),var(--brown));
+    box-shadow:0 4px 12px rgba(107,63,29,.25);transition:transform .12s}
+  .add:active{transform:scale(.96)}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:9px;font-style:italic}
+  .hint b{color:var(--brown);font-style:normal}
+
+  /* CHIPS */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chip{border:1.5px solid var(--line);background:#fff;color:var(--brown);
+    padding:7px 13px;border-radius:999px;font-size:12.5px;font-weight:700;
+    cursor:pointer;transition:all .15s;user-select:none}
+  .chip:hover{border-color:var(--gold)}
+  .chip.active{background:var(--brown);color:#fdeccf;border-color:var(--brown);
+    box-shadow:0 3px 10px rgba(107,63,29,.22)}
+
+  /* LIST */
+  .listcard{margin-top:20px}
+  .listhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .listhead h2{font-size:17px;font-weight:900;color:var(--brown)}
+  .listhead .cnt{font-size:12.5px;font-weight:800;color:var(--muted)}
+  .empty{text-align:center;color:var(--muted);padding:30px 10px;font-weight:600}
+  .empty .big{font-size:40px;margin-bottom:8px}
+  ul#list{list-style:none}
+  .item{display:flex;align-items:flex-start;gap:12px;padding:12px 4px;
+    border-bottom:1px solid var(--line);animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .item:last-child{border-bottom:none}
+  .idx{min-width:30px;font-weight:900;color:var(--gold);font-size:14px;
+    text-align:right;padding-top:2px;font-variant-numeric:tabular-nums}
+  .tog{flex-shrink:0;width:24px;height:24px;border-radius:50%;border:2.5px solid var(--gold);
+    background:#fff;cursor:pointer;position:relative;transition:all .18s;margin-top:1px}
+  .tog:hover{border-color:var(--brown)}
+  .item.done .tog{background:var(--green);border-color:var(--green)}
+  .item.done .tog::after{content:"✓";position:absolute;inset:0;display:flex;
+    align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:14px}
+  .txt{flex:1;font-weight:600;font-size:15.5px;padding-top:2px;word-break:break-word}
+  .item.done .txt{text-decoration:line-through;color:var(--green);opacity:.85}
+  .cat{display:inline-block;font-size:10.5px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.04em;color:var(--muted);margin-left:8px;vertical-align:middle}
+  .del{flex-shrink:0;border:none;background:none;cursor:pointer;color:var(--muted);
+    font-size:16px;font-weight:900;padding:2px 6px;border-radius:8px;transition:all .15s;line-height:1}
+  .del:hover{color:var(--red);background:#fdecea}
+
+  /* FOOTER ACTIONS */
+  .actions{display:flex;gap:10px;margin-top:20px}
+  .btn{flex:1;padding:13px;border-radius:14px;font-size:14px;font-weight:800;
+    cursor:pointer;border:2px solid var(--line);background:#fff;color:var(--brown);
+    transition:all .15s}
+  .btn:hover{border-color:var(--gold)}
+  .btn.danger{color:var(--red)}
+  .btn.danger:hover{border-color:var(--red);background:#fdecea}
+
+  @media(max-width:520px){
+    .add{padding:0 16px}
+    .stats{gap:8px}
+    .actions{flex-direction:column}
+  }
+</style>
+</head>
+<body>
+  <header class="hero">
+    <div class="kicker">Write the Vision</div>
+    <h1 class="title">The <span class="num">300</span> Challenge</h1>
+    <p class="tagline">Ask God for everything you want. 300 things. Big, small, wild, holy. Don't stop to judge — just write.</p>
+  </header>
+
+  <div class="wrap">
+    <div class="scriptures">
+      <p><b>Habakkuk 2:2</b> — "Write the vision, and make it plain."</p>
+      <p><b>James 4:2</b> — "You have not because you ask not."</p>
+    </div>
+
+    <!-- PROGRESS -->
+    <section class="card">
+      <div class="counter"><span id="count">0</span> <span class="of">/ 300</span></div>
+      <div class="counter-sub">Things written</div>
+      <div class="barwrap">
+        <div class="bar"><div class="fill" id="fill"></div></div>
+        <div class="wall"></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="n" id="statWritten">0</div><div class="l">Written</div></div>
+        <div class="stat done"><div class="n" id="statDone">0</div><div class="l">Come true</div></div>
+      </div>
+      <div class="milestone" id="milestone"></div>
+    </section>
+
+    <div class="reminder">📖 Read the whole list every morning and every night. One year from now, mark off what came true.</div>
+
+    <!-- INPUT -->
+    <section class="card">
+      <div class="inputrow">
+        <input id="entry" type="text" placeholder="I want..." autocomplete="off">
+        <button class="add" id="addBtn">Add</button>
+      </div>
+      <p class="hint">Be specific — not <b>"a new car"</b> but <b>"a white SUV, paid in full, by next summer."</b></p>
+      <div class="chips" id="chips"></div>
+    </section>
+
+    <!-- LIST -->
+    <section class="card listcard">
+      <div class="listhead">
+        <h2>Your Vision List</h2>
+        <span class="cnt" id="listCnt"></span>
+      </div>
+      <ul id="list"></ul>
+      <div class="empty" id="empty">
+        <div class="big">✍️</div>
+        Nothing written yet. Start with one thing you want. Then keep going — all the way to 300.
+      </div>
+      <div class="actions">
+        <button class="btn" id="exportBtn">⬇ Export list (.txt)</button>
+        <button class="btn danger" id="clearBtn">Clear all</button>
+      </div>
+    </section>
+  </div>
+
+<script>
+(function(){
+  "use strict";
+  var KEY="the300challenge.items.v1";
+  var CATS=["Health & body","Family & relationships","Career & purpose","Money & provision",
+    "Home","Travel","Faith & spirit","Character & growth","Giving & legacy","Fun & joy"];
+  var CAT_PROMPTS={
+    "Health & body":"I want my body to...",
+    "Family & relationships":"I want for my family...",
+    "Career & purpose":"I want in my work...",
+    "Money & provision":"I want financially...",
+    "Home":"I want my home to...",
+    "Travel":"I want to go to...",
+    "Faith & spirit":"I want in my walk with God...",
+    "Character & growth":"I want to become...",
+    "Giving & legacy":"I want to give...",
+    "Fun & joy":"I want to experience..."
+  };
+  var MILESTONES={
+    25:{t:"🌱 25 down. The vision is taking shape. Keep going.",wall:false},
+    50:{t:"🔥 50 things! You're warming up. Don't slow down now.",wall:false},
+    75:{t:"🧱 THE WALL. Most people freeze at 75 — the mind isn't built to dream this big yet. Break through. The best stuff is on the other side.",wall:true},
+    100:{t:"💯 100! You broke the wall. This is where real vision begins.",wall:false},
+    150:{t:"⭐ Halfway to 300. You're dreaming bigger than most people ever dare.",wall:false},
+    200:{t:"🚀 200 things written. Unstoppable. The list is becoming a map.",wall:false},
+    250:{t:"👑 250! So close. Push through to the finish.",wall:false},
+    300:{t:"🎉 300 THINGS. The vision is written and made plain. Now read it daily — and watch God move.",wall:false}
+  };
+
+  var items=[];
+  var activeCat=null;
+  var lastMilestone=0;
+
+  var $=function(id){return document.getElementById(id);};
+  var entry=$("entry"), list=$("list"), empty=$("empty");
+
+  function load(){
+    try{var raw=localStorage.getItem(KEY);if(raw)items=JSON.parse(raw)||[];}catch(e){items=[];}
+    if(!Array.isArray(items))items=[];
+  }
+  function save(){
+    try{localStorage.setItem(KEY,JSON.stringify(items));}catch(e){}
+  }
+
+  function buildChips(){
+    var c=$("chips");
+    CATS.forEach(function(cat){
+      var el=document.createElement("div");
+      el.className="chip";el.textContent=cat;
+      el.addEventListener("click",function(){
+        if(activeCat===cat){activeCat=null;el.classList.remove("active");
+          entry.placeholder="I want...";}
+        else{
+          activeCat=cat;
+          Array.prototype.forEach.call(c.children,function(x){x.classList.remove("active");});
+          el.classList.add("active");
+          entry.placeholder=CAT_PROMPTS[cat]||"I want...";
+        }
+        entry.focus();
+      });
+      c.appendChild(el);
+    });
+  }
+
+  function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML;}
+
+  function render(){
+    // list
+    list.innerHTML="";
+    if(items.length===0){empty.style.display="";}else{empty.style.display="none";}
+    items.forEach(function(it,i){
+      var li=document.createElement("li");
+      li.className="item"+(it.done?" done":"");
+      var catHtml=it.cat?'<span class="cat">'+esc(it.cat)+'</span>':'';
+      li.innerHTML=
+        '<div class="idx">'+(i+1)+'.</div>'+
+        '<div class="tog" data-i="'+i+'" role="checkbox" aria-checked="'+(it.done?'true':'false')+'"></div>'+
+        '<div class="txt">'+esc(it.text)+catHtml+'</div>'+
+        '<button class="del" data-del="'+i+'" aria-label="Delete">✕</button>';
+      list.appendChild(li);
+    });
+
+    var written=items.length;
+    var done=items.filter(function(x){return x.done;}).length;
+    $("count").textContent=written;
+    $("statWritten").textContent=written;
+    $("statDone").textContent=done;
+    $("listCnt").textContent=written?(done+" of "+written+" come true"):"";
+    var pct=Math.min(100,(written/300)*100);
+    $("fill").style.width=pct+"%";
+
+    updateMilestone(written);
+    save();
+  }
+
+  function updateMilestone(n){
+    // find highest milestone reached
+    var reached=0;
+    for(var k in MILESTONES){if(n>=k && k>reached)reached=parseInt(k,10);}
+    var box=$("milestone");
+    if(reached===0){box.style.display="none";lastMilestone=0;return;}
+    var m=MILESTONES[reached];
+    box.textContent=m.t;
+    box.className="milestone"+(m.wall?" wall":"");
+    box.style.display="block";
+    if(reached!==lastMilestone){
+      box.style.animation="none";box.offsetHeight;box.style.animation="";
+      lastMilestone=reached;
+    }
+  }
+
+  function addItem(){
+    var v=entry.value.trim();
+    if(!v)return;
+    if(items.length>=300){
+      alert("You've written all 300! The vision is complete. Time to read it — every morning and every night.");
+      return;
+    }
+    items.push({text:v,done:false,cat:activeCat||""});
+    entry.value="";
+    render();
+    entry.focus();
+  }
+
+  list.addEventListener("click",function(e){
+    var t=e.target;
+    if(t.classList.contains("tog")){
+      var i=parseInt(t.getAttribute("data-i"),10);
+      items[i].done=!items[i].done;render();
+    }else if(t.hasAttribute("data-del")){
+      var d=parseInt(t.getAttribute("data-del"),10);
+      items.splice(d,1);render();
+    }
+  });
+
+  $("addBtn").addEventListener("click",addItem);
+  entry.addEventListener("keydown",function(e){if(e.key==="Enter")addItem();});
+
+  $("exportBtn").addEventListener("click",function(){
+    if(items.length===0){alert("Nothing to export yet — write your first thing.");return;}
+    var lines=[];
+    lines.push("THE 300 CHALLENGE");
+    lines.push("Habakkuk 2:2 — \"Write the vision, and make it plain.\"");
+    lines.push("");
+    lines.push("("+items.length+" of 300 written · "+
+      items.filter(function(x){return x.done;}).length+" come true)");
+    lines.push("");
+    items.forEach(function(it,i){
+      var mark=it.done?"[✓] ":"[ ] ";
+      lines.push((i+1)+". "+mark+it.text+(it.cat?"  ("+it.cat+")":""));
+    });
+    lines.push("");
+    lines.push("Read the whole list every morning and every night.");
+    var blob=new Blob([lines.join("\n")],{type:"text/plain"});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement("a");
+    a.href=url;a.download="the-300-challenge.txt";
+    document.body.appendChild(a);a.click();
+    document.body.removeChild(a);URL.revokeObjectURL(url);
+  });
+
+  $("clearBtn").addEventListener("click",function(){
+    if(items.length===0)return;
+    if(confirm("Clear all "+items.length+" things? This can't be undone.")){
+      items=[];activeCat=null;
+      Array.prototype.forEach.call($("chips").children,function(x){x.classList.remove("active");});
+      entry.placeholder="I want...";
+      render();
+    }
+  });
+
+  load();buildChips();render();
+})();
+</script>
+</body>
+</html>
